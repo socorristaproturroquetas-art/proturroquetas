@@ -64,13 +64,13 @@
 <script>
 // Mapeo: día de la semana (0=domingo ... 6=sábado) -> archivo
 const files = {
-  1: "img/22_06.png", // lunes
-  2: "img/23_06.png", // martes
-  3: "img/24_06.png", // miércoles
-  4: "img/25_06.png", // jueves
-  5: "img/26_06.png", // viernes
-  6: "img/27_06.png", // sábado
-  0: "img/28_06.png"  // domingo
+  1: "22.06.png", // lunes
+  2: "23.06.png", // martes
+  3: "24.06.png", // miércoles
+  4: "25.06.png", // jueves
+  5: "26.06.png", // viernes
+  6: "27.06.png", // sábado
+  0: "28.06.png"  // domingo
 };
 const order = [1,2,3,4,5,6,0]; // lunes a domingo para la navegación
 const labels = {1:"L",2:"M",3:"X",4:"J",5:"V",6:"S",0:"D"};
@@ -78,8 +78,6 @@ const labels = {1:"L",2:"M",3:"X",4:"J",5:"V",6:"S",0:"D"};
 const stage = document.getElementById('stage');
 const nav = document.getElementById('nav');
 let currentIndex = order.indexOf(new Date().getDay());
-let autoTimer = null;
-let userOverride = false;
 
 function buildImages(){
   order.forEach((d,i)=>{
@@ -97,7 +95,6 @@ function buildNav(){
     btn.textContent = labels[d];
     if(d === todayDow) btn.classList.add('today');
     btn.addEventListener('click', ()=>{
-      userOverride = true;
       showSlide(i);
     });
     nav.appendChild(btn);
@@ -118,7 +115,6 @@ buildImages();
 buildNav();
 showSlide(currentIndex < 0 ? 0 : currentIndex);
 
-// Cada noche a las 00:01 recarga para mostrar el día correcto automáticamente
 function scheduleMidnightReload(){
   const now = new Date();
   const next = new Date(now.getFullYear(), now.getMonth(), now.getDate()+1, 0, 1, 0);
