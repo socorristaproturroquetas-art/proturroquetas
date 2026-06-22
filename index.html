@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Actividades de la Semana - Protur Roquetas Hotel & Spa</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background:#000;
+    height:100vh;
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:Arial, Helvetica, sans-serif;
+  }
+  #stage {
+    width:100%;
+    height:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+  }
+  #stage img {
+    max-width:100%;
+    max-height:100%;
+    width:auto;
+    height:auto;
+    object-fit:contain;
+    opacity:0;
+    transition:opacity 0.6s ease-in-out;
+  }
+  #stage img.active { opacity:1; }
+  #nav {
+    position:fixed;
+    bottom:14px;
+    left:0;
+    right:0;
+    display:flex;
+    justify-content:center;
+    gap:8px;
+    z-index:10;
+  }
+  #nav button {
+    width:34px; height:34px;
+    border-radius:50%;
+    border:2px solid rgba(255,255,255,0.5);
+    background:rgba(0,0,0,0.4);
+    color:#fff;
+    font-size:13px;
+    cursor:pointer;
+  }
+  #nav button.today { border-color:#FFD400; color:#FFD400; font-weight:bold; }
+  #nav button.current { background:#FFD400; color:#000; border-color:#FFD400; }
+</style>
+</head>
+<body>
+
+<div id="stage"></div>
+<div id="nav"></div>
+
+<script>
+// Mapeo: día de la semana (0=domingo ... 6=sábado) -> archivo
+const files = {
+  1: "img/22_06.png", // lunes
+  2: "img/23_06.png", // martes
+  3: "img/24_06.png", // miércoles
+  4: "img/25_06.png", // jueves
+  5: "img/26_06.png", // viernes
+  6: "img/27_06.png", // sábado
+  0: "img/28_06.png"  // domingo
+};
+const order = [1,2,3,4,5,6,0]; // lunes a domingo para la navegación
+const labels = {1:"L",2:"M",3:"X",4:"J",5:"V",6:"S",0:"D"};
+
+const stage = document.getElementById('stage');
+const nav = document.getElementById('nav');
+let currentIndex = order.indexOf(new Date().getDay());
+let autoTimer = null;
+let userOverride = false;
+
+function buildImages(){
+  order.forEach((d,i)=>{
+    const img = document.createElement('img');
+    img.src = files[d];
+    img.dataset.idx = i;
+    stage.appendChild(img);
+  });
+}
+
+function buildNav(){
+  const todayDow = new Date().getDay();
+  order.forEach((d,i)=>{
+    const btn = document.createElement('button');
+    btn.textContent = labels[d];
+    if(d === todayDow) btn.classList.add('today');
+    btn.addEventListener('click', ()=>{
+      userOverride = true;
+      showSlide(i);
+    });
+    nav.appendChild(btn);
+  });
+}
+
+function showSlide(i){
+  const imgs = stage.querySelectorAll('img');
+  imgs.forEach(img=>img.classList.remove('active'));
+  imgs[i].classList.add('active');
+  const btns = nav.querySelectorAll('button');
+  btns.forEach(b=>b.classList.remove('current'));
+  btns[i].classList.add('current');
+  currentIndex = i;
+}
+
+buildImages();
+buildNav();
+showSlide(currentIndex < 0 ? 0 : currentIndex);
+
+// Cada noche a las 00:01 recarga para mostrar el día correcto automáticamente
+function scheduleMidnightReload(){
+  const now = new Date();
+  const next = new Date(now.getFullYear(), now.getMonth(), now.getDate()+1, 0, 1, 0);
+  setTimeout(()=>location.reload(), next - now);
+}
+scheduleMidnightReload();
+</script>
+
+</body>
+</html>
